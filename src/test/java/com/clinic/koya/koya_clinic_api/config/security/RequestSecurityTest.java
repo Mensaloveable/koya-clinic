@@ -55,7 +55,7 @@ class RequestSecurityTest {
     }
 
     @Test
-    void doFilterAllowsApiPathsWithoutApiKey() throws Exception {
+    void doFilterRejectsApiPathsWithoutApiKey() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/slots");
         request.setServletPath("/slots");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -63,12 +63,12 @@ class RequestSecurityTest {
 
         security.doFilterInternal(request, response, chain);
 
-        verify(chain).doFilter(request, response);
-        assertThat(response.getStatus()).isEqualTo(200);
+        verifyNoInteractions(chain);
+        assertThat(response.getStatus()).isEqualTo(401);
     }
 
     @Test
-    void doFilterRejectsNonApiPathsWithoutApiKey() throws Exception {
+    void doFilterAllowsPublicPagesWithoutApiKey() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/");
         request.setServletPath("/");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -76,9 +76,8 @@ class RequestSecurityTest {
 
         security.doFilterInternal(request, response, chain);
 
-        verifyNoInteractions(chain);
-        assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).isEqualTo("{\"error\":\"unauthorized\"}");
+        verify(chain).doFilter(request, response);
+        assertThat(response.getStatus()).isEqualTo(200);
     }
 
     @Test

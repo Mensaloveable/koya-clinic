@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.security.MessageDigest;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@Component
 public class RequestSecurity extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(RequestSecurity.class);
@@ -36,7 +38,6 @@ public class RequestSecurity extends OncePerRequestFilter {
 
     public boolean authorized(HttpServletRequest request) {
         String supplied = request.getHeader(API_KEY_HEADER);
-        log.info("Supplied API key: {}", supplied); //TODO: Delete this line
         return supplied != null
                 && MessageDigest.isEqual(key, supplied.getBytes(StandardCharsets.UTF_8));
     }
@@ -57,7 +58,7 @@ public class RequestSecurity extends OncePerRequestFilter {
         addSecurityHeaders(response);
         String path = sanitizePath(request.getServletPath());
 
-        if (!isApiPath(path)) {
+        if (isApiPath(path)) {
             if (!authorized(request)) {
                 log.warn("Rejected unauthenticated API request: method={} path={} remote={}",
                         request.getMethod(), path, request.getRemoteAddr());
@@ -66,7 +67,7 @@ public class RequestSecurity extends OncePerRequestFilter {
             }
 
         } else if (path.startsWith("/web/") && "POST".equals(request.getMethod())) {
-            if (hasValidCsrfToken(request)) {
+            if (!hasValidCsrfToken(request)) {
                 log.warn("Rejected request with missing or invalid CSRF token: path={}", path);
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.setContentType("text/html;charset=UTF-8");
@@ -111,8 +112,6 @@ public class RequestSecurity extends OncePerRequestFilter {
     private static boolean hasValidCsrfToken(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         String expected = session == null ? null : (String) session.getAttribute(CSRF_ATTRIBUTE);
-        log.info("Expected CSRF token: {}", expected); //TODO: Delete this line
-        log.info("Request CSRF token: {}", request.getParameter("csrf")); //TODO: Delete this line
         return expected != null && expected.equals(request.getParameter("csrf"));
     }
 }
