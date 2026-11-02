@@ -1,0 +1,231 @@
+{
+  "info": {
+    "name": "Koya Clinic API",
+    "description": "Postman collection for Koya Clinic Booking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string",
+      "description": "Set your API key here"
+    }
+  ],
+  "item": [
+    {
+      "name": "Slots",
+      "item": [
+        {
+          "name": "List All Slots",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            },
+            "description": "Get all available slots"
+          }
+        },
+        {
+          "name": "List Slots by Provider",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slots?provider=DrSmith",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "DrSmith",
+                  "description": "Filter slots by provider name"
+                }
+              ]
+            },
+            "description": "Get slots filtered by provider"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "type": "text",
+                "description": "Optional: Prevent duplicate bookings"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slot_id\": \"slot-001\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"]
+            },
+            "description": "Create a new booking. Returns 201 on success, 429 if rate limited."
+          }
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "booking-id-here",
+                  "description": "Booking ID"
+                }
+              ]
+            },
+            "description": "Retrieve a specific booking by ID"
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "booking-id-here",
+                  "description": "Booking ID to cancel"
+                }
+              ]
+            },
+            "description": "Cancel a booking by ID"
+          }
+        },
+        {
+          "name": "Get Booking History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?email=user@example.com&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["bookings"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "user@example.com",
+                  "description": "Email to filter bookings (required)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of results (1-50, default 10)"
+                },
+                {
+                  "key": "cursor",
+                  "value": "",
+                  "description": "Pagination cursor from previous response",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get booking history for an email with pagination support"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reset",
+      "item": [
+        {
+          "name": "Reset Clinic Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slots\": [\n    {\n      \"id\": \"slot-001\",\n      \"provider\": \"DrSmith\",\n      \"start\": \"2026-11-03T09:00:00Z\",\n      \"end\": \"2026-11-03T10:00:00Z\"\n    },\n    {\n      \"id\": \"slot-002\",\n      \"provider\": \"DrJones\",\n      \"start\": \"2026-11-03T10:00:00Z\",\n      \"end\": \"2026-11-03T11:00:00Z\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/reset",
+              "host": ["{{baseUrl}}"],
+              "path": ["reset"]
+            },
+            "description": "Reset clinic data with new slots. Clears all bookings, idempotency records, and attempts."
+          }
+        }
+      ]
+    }
+  ]
+}
