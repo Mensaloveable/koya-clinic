@@ -16,6 +16,11 @@ public class KoyaClinicApiApp {
     private static final Logger log = LoggerFactory.getLogger(KoyaClinicApiApp.class);
 
     public static void main(String[] args) {
+        // Fix SSL mode typo in DB_URL environment variable
+        String dbUrl = System.getenv("DB_URL");
+        if (dbUrl != null && dbUrl.contains("sslmode=requir")) {
+            System.setProperty("DB_URL", dbUrl.replace("sslmode=requir", "sslmode=require"));
+        }
         SpringApplication.run(KoyaClinicApiApp.class, args);
         log.info(":: :: :: === Koya Clinic booking application started === :: :: ::");
     }
