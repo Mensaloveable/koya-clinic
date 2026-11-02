@@ -1,0 +1,40 @@
+# HTTPS is terminated by Render. Select plans/region in the dashboard before creating.
+services:
+  - type: web
+    name: koya-clinic
+    runtime: docker
+    plan: starter
+    healthCheckPath: /
+    envVars:
+      - key: API_KEY
+        generateValue: true
+      - key: DB_HOST
+        fromDatabase:
+          name: koya-clinic-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: koya-clinic-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: koya-clinic-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: koya-clinic-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: koya-clinic-db
+          property: password
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: SERVER_SERVLET_SESSION_COOKIE_SECURE
+        value: 'true'
+databases:
+  - name: koya-clinic-db
+    plan: basic-256mb
+    databaseName: clinic
+    user: clinic
+    ipAllowList: []
