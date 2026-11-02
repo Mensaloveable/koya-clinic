@@ -1,6 +1,5 @@
 spring:
   datasource:
     url: ${DB_URL}
-    hikari:
-      data-source-properties:
-        sslmode: require
+  flyway:
+    url: ${DB_URL}
