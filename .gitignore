@@ -52,3 +52,5 @@ __pycache__/
 *.pyc
 
 application-dev.yaml
+.neon
+node_modules/

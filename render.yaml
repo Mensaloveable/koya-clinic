@@ -1,40 +1,21 @@
-# HTTPS is terminated by Render. Select plans/region in the dashboard before creating.
+# Free web service; supply credentials for an external free PostgreSQL database.
+# No Render database is provisioned. See README for Neon Free setup.
 services:
   - type: web
     name: koya-clinic
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /
     envVars:
       - key: API_KEY
         generateValue: true
-      - key: DB_HOST
-        fromDatabase:
-          name: koya-clinic-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: koya-clinic-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: koya-clinic-db
-          property: database
+      - key: DB_URL
+        sync: false
       - key: DB_USER
-        fromDatabase:
-          name: koya-clinic-db
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: koya-clinic-db
-          property: password
+        sync: false
       - key: SPRING_PROFILES_ACTIVE
         value: render
       - key: SERVER_SERVLET_SESSION_COOKIE_SECURE
         value: 'true'
-databases:
-  - name: koya-clinic-db
-    plan: basic-256mb
-    databaseName: clinic
-    user: clinic
-    ipAllowList: []
