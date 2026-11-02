@@ -1,0 +1,54 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Build output
+/target/
+*.class
+
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+src/main/resources/application-dev.yml
+
+# Logs and OS/IDE files
+*.log
+.DS_Store
+.idea/
+
+# Python tooling
+__pycache__/
+*.pyc
+
+application-dev.yaml

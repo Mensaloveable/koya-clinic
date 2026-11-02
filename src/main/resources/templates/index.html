@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Find a clinic appointment, reserve your time, and manage your booking.">
+    <title>Koya · Clinic appointments</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="mark" aria-hidden="true">✚</span> Koya<span
+        class="brand-sub">CLINIC</span></a><a href="#manage" class="nav-link">Manage a booking <span aria-hidden="true">↗</span></a>
+</header>
+<main>
+    <section class="hero">
+        <div><p class="eyebrow">GOOD CARE, A LITTLE CLOSER</p>
+            <h1>A time for<br><em>your wellbeing.</em></h1>
+            <p class="intro">Find your appointment. Choose your clinician.<br>We’ll take care of the rest.</p>
+            <div class="hero-foot"><span class="dot"></span> Simple booking · Thoughtful care</div>
+        </div>
+        <aside class="care-note"><span class="note-icon" aria-hidden="true">✳</span>
+            <p>Make room<br>for feeling better.</p><span>Your next step starts here.</span>
+            <div class="orbit" aria-hidden="true"></div>
+        </aside>
+    </section>
+    <div th:if="${message}" class="alert" role="alert" tabindex="-1"><strong>Let’s try that again.</strong> <span
+            th:text="${message}"></span> <a href="/#appointments">Refresh available times</a></div>
+    <section th:if="${booking}" id="confirmation" class="confirmation" tabindex="-1"
+             aria-labelledby="confirmation-title"><p class="eyebrow"
+                                                     th:text="${booking.status == 'confirmed' ? 'YOU’RE ALL SET' : 'BOOKING UPDATED'}"></p>
+        <h2 id="confirmation-title"
+            th:text="${booking.status == 'confirmed' ? 'Your appointment is confirmed.' : 'Your appointment is cancelled.'}"></h2>
+        <p><span th:text="${booking.name}"></span> · <span th:text="${booking.email}"></span></p>
+        <div th:each="s : ${allSlots}" th:if="${s.id == booking.slot_id}">
+            <p><strong th:text="${s.provider}"></strong> ·
+                <time th:datetime="${s.start}" th:text="${s.start}"></time>
+                –
+                <time th:datetime="${s.end}" th:text="${s.end}"></time>
+                (UTC)
+            </p>
+        </div>
+        <p class="reference">Booking ID <code th:text="${booking.id}"></code></p>
+        <form th:if="${booking.status == 'confirmed'}" action="/web/cancel" method="post">
+            <input type="hidden"
+                   name="csrf"
+                   th:value="${csrf}"><input
+                type="hidden" name="id" th:value="${booking.id}">
+            <button class="button secondary" type="submit">Cancel appointment</button>
+        </form>
+    </section>
+    <section id="appointments" class="booking-layout">
+        <div class="slots-panel">
+            <div class="section-heading">
+                <div><p class="eyebrow">01 / FIND YOUR TIME</p>
+                    <h2>Available appointments</h2></div>
+                <span class="timezone">All times in UTC</span></div>
+            <form action="/#appointments" method="get" class="filter"><label for="provider">Your clinician</label>
+                <div class="inline"><select name="provider" id="provider">
+                    <option value="">All clinicians</option>
+                    <option th:each="p : ${providers}" th:value="${p}" th:text="${p}"
+                            th:selected="${p == provider}"></option>
+                </select>
+                    <button type="submit" class="button secondary">Filter</button>
+                </div>
+            </form>
+            <p class="empty" th:if="${#lists.isEmpty(slots)}">No appointments to show. Try another clinician or check
+                back soon.</p>
+            <div class="slot-list"><label class="slot" th:each="s : ${slots}"
+                                          th:classappend="${!s.available || !T(java.time.Instant).parse(s.start).isAfter(now) ? 'unavailable' : ''}"><input
+                    type="radio" form="booking-form" name="slot_id" th:value="${s.id}"
+                    th:checked="${s.id == selectedSlot}"
+                    th:disabled="${!s.available || !T(java.time.Instant).parse(s.start).isAfter(now)}" required><span
+                    class="slot-detail"><strong th:text="${s.provider}"></strong><span><time th:datetime="${s.start}"
+                                                                                             th:text="${s.start}"></time><span
+                    class="slot-end"> – <time th:datetime="${s.end}"
+                                              th:text="${s.end}">
+            </time></span></span></span><span class="badge"
+                                              th:text="${!s.available ? 'Booked' : (!T(java.time.Instant).parse(s.start).isAfter(now) ? 'Past' : 'Available')}">
+            </span>
+            </label>
+            </div>
+        </div>
+        <aside class="form-card"><p class="eyebrow">02 / YOUR DETAILS</p>
+            <h2>See you soon.</h2>
+            <p class="muted">Choose a time, then tell us a little about yourself.</p>
+            <form id="booking-form" action="/web/book" method="post"><input type="hidden" name="csrf"
+                                                                            th:value="${csrf}"><input type="hidden"
+                                                                                                      name="intent"
+                                                                                                      th:value="${intent}"><label
+                    for="name">Full name</label><input id="name" name="name" autocomplete="name" maxlength="1000"
+                                                       placeholder="e.g. Ada Obi" th:value="${name}" required><label
+                    for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email"
+                                                            maxlength="254" placeholder="you@example.com"
+                                                            th:value="${formEmail}" required>
+                <p class="field-note">Use this email to find your booking later.</p>
+                <button type="submit" class="button primary">Confirm appointment <span aria-hidden="true">↗</span>
+                </button>
+                <p class="small">Please keep your booking ID after confirming. No payment is required to reserve a
+                    time.</p></form>
+            <div class="card-footer"><span aria-hidden="true">✚</span> A little time. A healthier you.</div>
+        </aside>
+    </section>
+    <section id="manage" class="manage">
+        <div><p class="eyebrow">ALREADY HAVE AN APPOINTMENT?</p>
+            <h2>Your care, at a glance.</h2>
+            <p class="muted">Look up a booking to view or cancel it, or find your booking history by email.</p>
+            <p class="privacy-note">This demo has no patient sign-in. Anyone with a booking ID or email can view those
+                records. Use demonstration details only.</p></div>
+        <div>
+            <form action="/#confirmation" method="get"><label for="booking-id">Booking ID</label>
+                <div class="inline"><input id="booking-id" name="booking" placeholder="Paste your booking ID" required>
+                    <button class="button secondary">Find booking</button>
+                </div>
+            </form>
+            <form action="/#history" method="get"><label for="history-email">Booking history</label>
+                <div class="inline"><input id="history-email" name="email" type="email" placeholder="Your email address"
+                                           th:value="${historyEmail}" required>
+                    <button class="button secondary">View history</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <section th:if="${history}" id="history" class="history"><h2>Your booking history</h2>
+        <p th:if="${#lists.isEmpty(history.bookings)}" class="empty">No bookings found for this email.</p>
+        <ul class="history-list">
+            <li th:each="b : ${history.bookings}"><a th:href="@{/(booking=${b.id})}"
+                                                     th:text="${b.name + ' · ' + b.slot_id}"></a><span
+                    th:text="${b.status}" class="badge"></span>
+                <time th:datetime="${b.created_at}" th:text="${b.created_at}"></time>
+                <code th:text="${b.id}"></code></li>
+        </ul>
+        <a th:if="${history.next_cursor}" class="button secondary load-more"
+           th:href="@{/(email=${historyEmail},cursor=${history.next_cursor})} + '#history'">Load more</a>
+        <p class="history-status" role="status" aria-live="polite"></p></section>
+</main>
+<footer><a href="/" class="brand">Koya</a><span>Thoughtful care, one appointment at a time.</span><span>Clinic booking · UTC</span>
+</footer>
+</body>
+</html>

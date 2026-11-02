@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: koya_clinic_api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:}
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/clinic_booking}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 16
+  jackson:
+    deserialization:
+      fail-on-trailing-tokens: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: false
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+clinic:
+  api-key: ${API_KEY:}
+  pagination:
+    min-limit: 1
+    max-limit: 50
+    default-limit: 10
