@@ -33,9 +33,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/slots",
+              "raw": "{{baseUrl}}/api/slots",
               "host": ["{{baseUrl}}"],
-              "path": ["slots"]
+              "path": ["api", "slots"]
             },
             "description": "Get all available slots"
           }
@@ -52,9 +52,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/slots?provider=DrSmith",
+              "raw": "{{baseUrl}}/api/slots?provider=DrSmith",
               "host": ["{{baseUrl}}"],
-              "path": ["slots"],
+              "path": ["api", "slots"],
               "query": [
                 {
                   "key": "provider",
@@ -97,9 +97,9 @@
               "raw": "{\n  \"slot_id\": \"slot-001\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/bookings",
+              "raw": "{{baseUrl}}/api/bookings",
               "host": ["{{baseUrl}}"],
-              "path": ["bookings"]
+              "path": ["api", "bookings"]
             },
             "description": "Create a new booking. Returns 201 on success, 429 if rate limited."
           }
@@ -116,9 +116,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/bookings/:id",
+              "raw": "{{baseUrl}}/api/bookings/:id",
               "host": ["{{baseUrl}}"],
-              "path": ["bookings", ":id"],
+              "path": ["api", "bookings", ":id"],
               "variable": [
                 {
                   "key": "id",
@@ -142,9 +142,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/bookings/:id",
+              "raw": "{{baseUrl}}/api/bookings/:id",
               "host": ["{{baseUrl}}"],
-              "path": ["bookings", ":id"],
+              "path": ["api", "bookings", ":id"],
               "variable": [
                 {
                   "key": "id",
@@ -168,9 +168,9 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/bookings?email=user@example.com&limit=10",
+              "raw": "{{baseUrl}}/api/bookings?email=user@example.com&limit=10",
               "host": ["{{baseUrl}}"],
-              "path": ["bookings"],
+              "path": ["api", "bookings"],
               "query": [
                 {
                   "key": "email",
@@ -218,9 +218,9 @@
               "raw": "{\n  \"slots\": [\n    {\n      \"id\": \"slot-001\",\n      \"provider\": \"DrSmith\",\n      \"start\": \"2026-11-03T09:00:00Z\",\n      \"end\": \"2026-11-03T10:00:00Z\"\n    },\n    {\n      \"id\": \"slot-002\",\n      \"provider\": \"DrJones\",\n      \"start\": \"2026-11-03T10:00:00Z\",\n      \"end\": \"2026-11-03T11:00:00Z\"\n    }\n  ]\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/reset",
+              "raw": "{{baseUrl}}/api/reset",
               "host": ["{{baseUrl}}"],
-              "path": ["reset"]
+              "path": ["api", "reset"]
             },
             "description": "Reset clinic data with new slots. Clears all bookings, idempotency records, and attempts."
           }

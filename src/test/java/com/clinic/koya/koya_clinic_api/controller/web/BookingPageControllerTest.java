@@ -113,7 +113,7 @@ class BookingPageControllerTest {
 
         String view = controller.book("s1", "Ada", "ada@example.com", "intent-1", request, response, model);
 
-        assertThat(view).isEqualTo("redirect:/?booking=b1#confirmation");
+        assertThat(view).isEqualTo("redirect:/web/?booking=b1#confirmation");
         assertThat(model.getAttribute("intent")).isEqualTo("intent-1");
         assertThat(model.getAttribute("name")).isEqualTo("Ada");
         assertThat(model.getAttribute("formEmail")).isEqualTo("ada@example.com");
@@ -149,7 +149,7 @@ class BookingPageControllerTest {
     void cancelRedirectsBackToConfirmation() {
         String view = controller.cancel("b1");
 
-        assertThat(view).isEqualTo("redirect:/?booking=b1#confirmation");
+        assertThat(view).isEqualTo("redirect:/web/?booking=b1#confirmation");
         verify(bookingService).cancel("b1");
     }
 

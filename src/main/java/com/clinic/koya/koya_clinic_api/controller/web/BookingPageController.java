@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URLEncoder;
@@ -27,6 +24,7 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/web")
 public class BookingPageController {
 
     private static final Logger log = LoggerFactory.getLogger(BookingPageController.class);
@@ -67,7 +65,7 @@ public class BookingPageController {
         return render(model, request);
     }
 
-    @PostMapping("/web/book")
+    @PostMapping("/book")
     public String book(
             @RequestParam("slot_id") String slotId,
             @RequestParam String name,
@@ -89,7 +87,7 @@ public class BookingPageController {
         if (result.statusCode() == HttpStatus.CREATED.value()) {
             String id = objectMapper.readTree(result.body()).get("id").asString();
             log.info("Web booking confirmed: id={} slot={}", id, slotId);
-            return "redirect:/?booking=" + id + "#confirmation";
+            return "redirect:/web/?booking=" + id + "#confirmation";
         }
 
         response.setStatus(result.statusCode());
@@ -105,12 +103,12 @@ public class BookingPageController {
         return render(model, request);
     }
 
-    @PostMapping("/web/cancel")
+    @PostMapping("/cancel")
     public String cancel(@RequestParam String id) {
 
         bookingService.cancel(id);
         log.info("Web booking cancelled: id={}", id);
-        return "redirect:/?booking=" + URLEncoder.encode(id, StandardCharsets.UTF_8) + "#confirmation";
+        return "redirect:/web/?booking=" + URLEncoder.encode(id, StandardCharsets.UTF_8) + "#confirmation";
     }
 
     @ExceptionHandler(ApiFailure.class)

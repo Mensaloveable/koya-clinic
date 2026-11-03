@@ -38,7 +38,7 @@ class BookingWebRoutingTest {
     }
 
     @Test void homeRoutesThroughControllerAndRendersClinician() throws Exception {
-        mvc.perform(get("/"))
+        mvc.perform(get("/web/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
                 .andExpect(model().attribute("providers", List.of("Dr Ade")))
@@ -47,12 +47,12 @@ class BookingWebRoutingTest {
     }
 
     @Test void apiRequiresKeyAndAcceptsCorrectKey() throws Exception {
-        mvc.perform(get("/slots").servletPath("/slots"))
+        mvc.perform(get("/api/slots").servletPath("/api/slots"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().json("{\"error\":\"unauthorized\"}"));
-        mvc.perform(get("/slots").servletPath("/slots").header("X-API-Key", "wrong"))
+        mvc.perform(get("/api/slots").servletPath("/api/slots").header("X-API-Key", "wrong"))
                 .andExpect(status().isUnauthorized());
-        mvc.perform(get("/slots").servletPath("/slots").header("X-API-Key", "routing-test-key"))
+        mvc.perform(get("/api/slots").servletPath("/api/slots").header("X-API-Key", "routing-test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.slots[0].provider").value("Dr Ade"));
     }
@@ -61,7 +61,7 @@ class BookingWebRoutingTest {
         mvc.perform(post("/web/book").servletPath("/web/book").param("slot_id", "s1").param("name", "Ada")
                 .param("email", "ada@example.com").param("intent", "intent-1"))
                 .andExpect(status().isForbidden());
-        var home = mvc.perform(get("/")).andReturn();
+        var home = mvc.perform(get("/web/")).andReturn();
         var session = (MockHttpSession) home.getRequest().getSession(false);
         when(service.create(any(BookingRequest.class), eq("intent-1")))
                 .thenReturn(new Outcome(201, "{\"id\":\"b1\"}", null));
@@ -70,6 +70,6 @@ class BookingWebRoutingTest {
                 .param("slot_id", "s1").param("name", "Ada")
                 .param("email", "ada@example.com").param("intent", "intent-1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/?booking=b1#confirmation"));
+                .andExpect(redirectedUrl("/web/?booking=b1#confirmation"));
     }
 }
