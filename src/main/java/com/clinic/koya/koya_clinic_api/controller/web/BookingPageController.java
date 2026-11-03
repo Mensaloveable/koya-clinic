@@ -76,7 +76,7 @@ public class BookingPageController {
             HttpServletRequest request,
             HttpServletResponse response,
             Model model
-    ) throws Exception{
+    ) {
 
         model.addAttribute(INTENT_ATTRIBUTE, intent);
         model.addAttribute("name", name);
