@@ -14,7 +14,7 @@ class HealthControllerTest {
 
         assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).containsEntry("status", "UP");
-        assertThat(response.getBody()).containsEntry("service", "IQA-Backend");
+        assertThat(response.getBody()).containsEntry("service", "Koya Clinic App");
         assertThat((Long) response.getBody().get("timestamp")).isPositive();
     }
 }

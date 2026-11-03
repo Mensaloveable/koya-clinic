@@ -46,6 +46,47 @@ class BookingWebRoutingTest {
                 .andExpect(content().string(containsString("name=\"csrf\"")));
     }
 
+    @Test void rootHomeLoadsCliniciansInsteadOfEmptyWelcomeTemplate() throws Exception {
+        mvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attribute("providers", List.of("Dr Ade")))
+                .andExpect(content().string(containsString("Dr Ade")));
+        mvc.perform(get("/web"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("providers", List.of("Dr Ade")));
+    }
+
+    @Test void rootProviderFilterUsesControllerModel() throws Exception {
+        mvc.perform(get("/").param("provider", "Dr Ade"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("provider", "Dr Ade"))
+                .andExpect(content().string(containsString("Dr Ade")));
+        mvc.perform(get("/").param("provider", "No such clinician"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("No appointments to show")));
+    }
+
+    @Test void pastSlotsStillPopulateCliniciansOnRootAndWebHome() throws Exception {
+        when(service.now()).thenReturn(Instant.parse("2026-11-04T00:00:00Z"));
+        when(service.slots(null)).thenReturn(Map.of("slots", List.of(
+                Map.of("id", "slot-001", "provider", "DrSmith", "start", "2026-11-03T09:00:00Z",
+                        "end", "2026-11-03T10:00:00Z", "available", true),
+                Map.of("id", "slot-002", "provider", "DrJones", "start", "2026-11-03T10:00:00Z",
+                        "end", "2026-11-03T11:00:00Z", "available", true),
+                Map.of("id", "slot-003", "provider", "DrKoya", "start", "2026-11-03T11:00:00Z",
+                        "end", "2026-11-03T15:00:00Z", "available", true))));
+        for (String path : List.of("/", "/web/")) {
+            mvc.perform(get(path))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute("providers", List.of("DrJones", "DrKoya", "DrSmith")))
+                    .andExpect(content().string(containsString("DrSmith")))
+                    .andExpect(content().string(containsString("DrJones")))
+                    .andExpect(content().string(containsString("DrKoya")))
+                    .andExpect(content().string(containsString("Past")));
+        }
+    }
+
     @Test void apiRequiresKeyAndAcceptsCorrectKey() throws Exception {
         mvc.perform(get("/api/slots").servletPath("/api/slots"))
                 .andExpect(status().isUnauthorized())

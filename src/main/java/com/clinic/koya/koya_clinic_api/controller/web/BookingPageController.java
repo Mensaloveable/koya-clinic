@@ -24,7 +24,6 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/web")
 public class BookingPageController {
 
     private static final Logger log = LoggerFactory.getLogger(BookingPageController.class);
@@ -36,7 +35,7 @@ public class BookingPageController {
     private final ObjectMapper objectMapper;
 
 
-    @GetMapping("/")
+    @GetMapping({"/", "/web", "/web/"})
     public String home(
             @RequestParam(required = false) String provider,
             @RequestParam(required = false) String booking,
@@ -65,7 +64,7 @@ public class BookingPageController {
         return render(model, request);
     }
 
-    @PostMapping("/book")
+    @PostMapping("/web/book")
     public String book(
             @RequestParam("slot_id") String slotId,
             @RequestParam String name,
@@ -103,7 +102,7 @@ public class BookingPageController {
         return render(model, request);
     }
 
-    @PostMapping("/cancel")
+    @PostMapping("/web/cancel")
     public String cancel(@RequestParam String id) {
 
         bookingService.cancel(id);
