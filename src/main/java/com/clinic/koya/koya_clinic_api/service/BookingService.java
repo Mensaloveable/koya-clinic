@@ -120,7 +120,6 @@ public class BookingService {
 
                 afterCreatedAt = Instant.parse(parts.get(1).asString());
                 afterId = parts.get(2).asString();
-                log.info("After id: {}", afterId); //TODO: Delete this line
                 UUID.fromString(afterId);
 
             } catch (Exception ex) {
@@ -163,7 +162,6 @@ public class BookingService {
 
         final String email = normalized;
         Integer retryAfter = email == null ? null : limiter.attempt(email);
-        log.info("Retry after: {}", retryAfter); //TODO: Delete this line
 
         if (retryAfter != null) {
             log.warn("Booking attempt rate limited: retryAfterSeconds={}", retryAfter);

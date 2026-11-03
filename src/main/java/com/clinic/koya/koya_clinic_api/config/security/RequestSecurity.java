@@ -102,7 +102,6 @@ public class RequestSecurity extends OncePerRequestFilter {
 
     private static boolean isApiPath(String path) {
         String cleanPath = sanitizePath(path);
-        log.info("Clean path: {}", cleanPath); //TODO: Delete this line
         return cleanPath.equals("/slots")
                 || cleanPath.equals("/reset")
                 || cleanPath.equals("/bookings")
