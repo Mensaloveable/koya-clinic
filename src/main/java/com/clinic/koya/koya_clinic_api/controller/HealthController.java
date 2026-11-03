@@ -13,7 +13,7 @@ public class HealthController {
     public ResponseEntity<Map<String, Object>> app() {
         return ResponseEntity.ok(Map.of(
                 "status", "UP",
-                "service", "IQA-Backend",
+                "service", "Koya Clinic App",
                 "timestamp", System.currentTimeMillis()
         ));
     }
